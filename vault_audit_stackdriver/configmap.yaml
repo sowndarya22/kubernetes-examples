@@ -1,0 +1,17 @@
+apiVersion: v1
+data:
+  fluentd-vault.conf: |
+    <source>
+      type tail
+      format json
+      path /mnt/logs/audit.log
+      pos_file /mnt/logs/audit.log.pos
+      tag vault-audit
+    </source>
+
+    <match **>
+      type stdout
+    </match>
+kind: ConfigMap
+metadata:
+  name: vault-fluentd-config
