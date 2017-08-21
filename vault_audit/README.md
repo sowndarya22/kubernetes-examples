@@ -37,3 +37,9 @@ HOWEVER, I could not find a sensible way to rotate the logs without possible los
 - Vault's file backend allows you to send `SIGHUP` to the vault process to tell it to reopen the new `audit.log`, BUT sending process signals from a sidecar container to the main vault container isn't possible.
 - If we use the "copytruncate" method (copying the file to `audit.log.1` and truncating `audit.log`), it is possible we lose some logs *in-between the copy and truncate operations*.
 
+
+## References
+- https://github.com/moby/moby/issues/19616
+- https://github.com/moby/moby/issues/6880#issuecomment-220637337
+- https://kubernetes.io/docs/concepts/cluster-administration/logging/
+- https://www.vaultproject.io/docs/audit/file.html
