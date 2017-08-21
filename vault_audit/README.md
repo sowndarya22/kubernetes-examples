@@ -33,8 +33,8 @@ The other option is just outputting to a normal file in an [emtpyDir](https://ku
 2. rotate logs and delete the older ones
 
 HOWEVER, I could not find a sensible way to rotate the logs without possible loss of logs. The issues are:
-- Vault writes logs using the inode, so when you rotate your `audit.log` to `audit.log.1` and create a new `audit.log`, logs will be written to `audit.log.1`. 
-- Vault's file backend allows you to send `SIGHUP` to the vault process to tell it to reopen the new `audit.log`, BUT sending process signals from a sidecar container to the main vault container isn't possible.
+- Vault leaves the audit log file open and doesn't update the inode, so when you rotate your `audit.log` to `audit.log.1` and create a new `audit.log`, logs will be written to `audit.log.1`. 
+- Vault's file backend allows you to send `SIGHUP` to the vault process to tell it to open the new `audit.log`, BUT sending process signals from a sidecar container to the main vault container isn't possible.
 - If we use the "copytruncate" method (copying the file to `audit.log.1` and truncating `audit.log`), it is possible we lose some logs *in-between the copy and truncate operations*.
 
 
