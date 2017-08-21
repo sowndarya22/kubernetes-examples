@@ -2,7 +2,7 @@
 
 This example shows how to output [Vault's](https://vaultproject.io) audit log to stdout in Kubernetes. Technically it's a Docker problem, but Kubernetes is a popular and useful platform to demonstrate the solution on.
 
-## The problem
+## The problem(s)
 1. We want to output Vault's ["file" audit backend](https://www.vaultproject.io/docs/audit/file.html) to stdout.
 2. In Docker, you can't [simply log to stdout](https://github.com/moby/moby/issues/19616) by outputting to `/dev/stdout`. There are recommendations to [symlink to or directly output to `/proc/1/fd/1`](https://github.com/moby/moby/issues/19616#issuecomment-174355979), but this appears to only work if the container doesn't run as `root`.
 3. The [official vault container](https://hub.docker.com/_/vault/) runs as user `vault`, not `root`, so we need another solution.
@@ -26,3 +26,14 @@ If you take a look at the vault-server logs you should see the audit logs, being
 ```
 kubectl logs -f vault-audit-stackdriver vault-server
 ```
+
+## Additional Notes
+The other option is just outputting to a normal file in an [emtpyDir](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir), and having 2 sidecar containers to:
+1. tail logs to stdout, or even push directly to something like Stackdriver with the fluentd container
+2. rotate logs and delete the older ones
+
+HOWEVER, I could not find a sensible way to rotate the logs without possible loss of logs. The issues are:
+- Vault writes logs using the inode, so when you rotate your `audit.log` to `audit.log.1` and create a new `audit.log`, logs will be written to `audit.log.1`. 
+- Vault's file backend allows you to send `SIGHUP` to the vault process to tell it to reopen the new `audit.log`, BUT sending process signals from a sidecar container to the main vault container isn't possible.
+- If we use the "copytruncate" method (copying the file to `audit.log.1` and truncating `audit.log`), it is possible we lose some logs *in-between the copy and truncate operations*.
+
