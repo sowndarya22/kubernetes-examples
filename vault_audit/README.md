@@ -1,4 +1,4 @@
-# Vault Auditing to stdout
+# Vault Audit Logs to stdout
 
 This example shows how to output [Vault's](https://vaultproject.io) audit log to stdout in Kubernetes. Technically it's a Docker problem, but Kubernetes is a popular and useful platform to demonstrate the solution on.
 
