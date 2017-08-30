@@ -1,3 +1,6 @@
+# NOTICE: out of date!
+Vault will have audit logs to stdout feature in 0.8.2. See https://github.com/hashicorp/vault/pull/3235
+
 # Vault Audit Logs to stdout
 
 This example shows how to output [Vault's](https://vaultproject.io) audit log to stdout in Kubernetes. Technically it's a Docker problem, but Kubernetes is a popular and useful platform to demonstrate the solution on.
